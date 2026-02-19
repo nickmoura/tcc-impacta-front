@@ -1,73 +1,83 @@
-# React + TypeScript + Vite
+# TCC Impacta — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositório contém o frontend do projeto "TCC Impacta", uma aplicação React criada com Vite e TypeScript.
 
-Currently, two official plugins are available:
+Descrição do projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Este é um sistema de gestão de clínicas médicas com funcionalidades para:
+ - Agendamento de consultas
+ - Gestão de pacientes
+ - Suporte a multitenancy (várias clínicas/operadores)
+ - Módulo financeiro (faturas, pagamentos, cobranças)
 
-## React Compiler
+ **Resumo técnico:**
+ - Frontend em React + TypeScript
+ - Build com Vite
+ - Estilização com Tailwind CSS
+ - Requisições HTTP via Axios
+ - Lint com ESLint
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+ Tecnologias principais
+ - React 19
+ - TypeScript
+ - Vite
+ - Tailwind CSS
+ - Axios
+ - ESLint
 
-## Expanding the ESLint configuration
+ Pré-requisitos
+ - Node.js v20 ou superior
+ - npm ou pnpm
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+ Instalação
+ 1. Instale dependências:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+ ```bash
+ npm install
+ ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+ 2. Execute em modo de desenvolvimento:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+ ```bash
+ npm run dev
+ ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+ Scripts úteis
+ - `dev`: inicia o servidor de desenvolvimento (Vite)
+ - `build`: compila TypeScript (`tsc -b`) e cria a build do Vite
+ - `preview`: pré-visualiza a build criada
+ - `lint`: executa o ESLint no projeto
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+ Exemplo de uso de scripts:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+ ```bash
+ npm run dev
+ npm run build
+ npm run preview
+ npm run lint
+ ```
+
+Estrutura principal do projeto
+- `src/`: código-fonte da aplicação
+- `public/`: ativos estáticos
+- `index.html`: entrada da aplicação
+- `vite.config.ts`: configuração do Vite
+- `tsconfig.*.json`: configurações do TypeScript
+
+Boas práticas e notas
+- Ajuste variáveis de ambiente e URLs de API conforme o ambiente (arquivo `.env` se necessário).
+- Execute `npm run lint` antes de abrir PRs para manter a consistência de código.
+
+
+Contribuição
+- Faça um fork do repositório
+- Crie uma branch com a sua feature/fix
+- Abra um Pull Request descrevendo as mudanças
+
+Repositório e suporte
+- Repositório: https://github.com/nickmoura/tcc-impacta-front
+
+Licença
+- ISC (conforme `package.json`)
+
+Se quiser, posso adicionar instruções específicas de deploy ou exemplo de .env.
