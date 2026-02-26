@@ -1,46 +1,56 @@
 import React from "react";
+import '../assets/css/login.css';
+import heroPic from '../assets/img/side-view-smiley-doctor-taking-notes.jpg';
 
 export default function Login() {
+  interface LogoProps {
+    width?: number;
+    height?: number;
+    text?: string;
+    bg?: string;
+    color?: string;
+  }
+
+  const Logo: React.FC<LogoProps> = ({
+    width = 200,
+    height = 80,
+    text = "Logo",
+    bg = "000000",
+    color = "FFFFFF",
+  }) => {
+    const url = `https://placehold.co/${width}x${height}/${bg}/${color}?text=${encodeURIComponent(
+      text
+    )}`;
+    return (
+      <img
+        src={url}
+        alt={text}
+        width={width}
+        height={height}
+        className="mb-6"
+      />
+    );
+  };
+
   return (
     <div className="flex h-screen w-full">
       {/* Lado esquerdo */}
-      <div className="hidden md:flex w-1/2 relative bg-blue-700">
+      <div className="hidden md:flex w-3/5 relative login-hero">
         <img
-          src="/clinic.jpg"
+          src={heroPic}
           alt="Clínica"
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
+          className="absolute inset-0 w-full h-full object-cover "
         />
-
-        <div className="relative z-10 flex flex-col justify-center px-16 text-white">
-          <h1 className="text-4xl font-bold mb-4">CliniCys</h1>
-          <p className="mb-6 text-lg">
-            Sistema completo de gestão para clínicas de saúde
-          </p>
-
-          <ul className="space-y-2">
-            <li>• Gestão de pacientes</li>
-            <li>• Agendamento inteligente</li>
-            <li>• Prontuário eletrônico</li>
-          </ul>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
       {/* Lado direito */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-100 px-6">
+      <div className="flex flex-col w-full md:w-2/5 items-center justify-center bg-gray-100 px-6">
+        <Logo width={100} height={100} />
         <div className="bg-white w-full max-w-md p-10 rounded-2xl shadow-xl">
-          <h2 className="text-2xl font-bold mb-2">
-            Bem-vindo de volta
-          </h2>
-
-          <p className="text-gray-500 mb-6">
-            Entre com suas credenciais para acessar o sistema
-          </p>
-
           <form className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Email
-              </label>
               <input
                 type="email"
                 placeholder="seu@email.com"
@@ -49,9 +59,6 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Senha
-              </label>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -59,23 +66,19 @@ export default function Login() {
               />
             </div>
 
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-lg">
               <label className="flex items-center gap-2">
-                <input type="checkbox" />
-                Lembrar-me
+                <input type="checkbox" /> Lembrar-me
               </label>
 
-              <button
-                type="button"
-                className="text-blue-600 hover:underline"
-              >
+              <button type="button" className="text-blue-600 hover:underline">
                 Esqueci minha senha
               </button>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white p-3 rounded-lg font-medium hover:bg-blue-700 transition"
+              className="w-full bg-blue-600 text-3xl text-white p-3 rounded-lg font-medium hover:bg-blue-700 transition"
             >
               Entrar
             </button>
