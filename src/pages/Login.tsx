@@ -100,6 +100,7 @@ export default function Login() {
             >
               Entrar
             </button>
+            <div className="no-username-container text-center"><span className="text-gray-500">Não tem uma conta? <a href="/register" className="text-blue-700 hover:underline">Cadastre-se aqui</a></span></div>
           </form>
         </div>
       </div>
