@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import '../assets/css/login.css';
-import heroPic from '../assets/img/side-view-smiley-doctor-taking-notes.jpg';
 import { Eye, EyeOff } from "lucide-react";
 import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
-
+import Hero from "../components/Hero";
 interface LogoProps {
   width?: number;
   className?: string;
@@ -59,14 +58,8 @@ export default function Login() {
   return (
     <div className="flex h-screen w-full">
       {/* Lado esquerdo */}
-      <div className="hidden md:flex w-3/5 relative login-hero">
-        <img
-          src={heroPic}
-          alt="Clínica"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-        <div className="absolute inset-0 bg-black/20" />
+      <div className="hero-container hidden md:flex w-3/5 relative">
+        <Hero />
       </div>
 
       {/* Lado direito */}
