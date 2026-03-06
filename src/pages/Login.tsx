@@ -24,7 +24,11 @@ const Logo: React.FC<LogoProps> = ({ width = 150 }) => (
   </div>
 );
 
-export default function Login() {
+interface LoginProps {
+  onRegister?: () => void;
+}
+
+export default function Login({ onRegister }: LoginProps) {
   const [mostrarSenha, setMostrarSenha] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
@@ -41,7 +45,7 @@ export default function Login() {
           },
           body: JSON.stringify({
             email,
-            senha,
+            password: senha,
           }),
         }
       );
@@ -67,7 +71,8 @@ export default function Login() {
         <Logo width={220} />
 
         <div className="bg-white w-full max-w-md p-10 rounded-2xl shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-4">            <div>
+          <form onSubmit={handleSubmit} className="space-y-4">            
+          <div>
             <input
               type="email"
               placeholder="seu@email.com"
@@ -100,7 +105,18 @@ export default function Login() {
             >
               Entrar
             </button>
-            <div className="no-username-container text-center"><span className="text-gray-500">Não tem uma conta? <a href="/register" className="text-blue-700 hover:underline">Cadastre-se aqui</a></span></div>
+            <div className="no-username-container text-center">
+              <span className="text-gray-500">
+                Não tem uma conta?{' '}
+                <button
+                  type="button"
+                  onClick={onRegister}
+                  className="text-blue-700 hover:underline"
+                >
+                  Cadastre-se aqui
+                </button>
+              </span>
+            </div>
           </form>
         </div>
       </div>
