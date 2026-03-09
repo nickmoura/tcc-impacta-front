@@ -14,7 +14,7 @@ export default function Registro({ onBack }: RegistroProps) {
 	const [cnpj, setCnpj] = useState<string>("");
 	const [email, setEmail] = useState<string>("");
 	const [senha, setSenha] = useState<string>("");
-	function handleChange(e) {
+	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const masked = mascaraCnpj(e.target.value);
 		setCnpj(masked);
 	}
@@ -83,8 +83,9 @@ export default function Registro({ onBack }: RegistroProps) {
 						<div>
 							<input
 								type="text"
-								placeholder="CNPJ"
+								placeholder="CNPJ da clínica"
 								id="cnpj"
+								maxLength={18}
 								className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
 								value={cnpj}
 								onChange={handleChange}
