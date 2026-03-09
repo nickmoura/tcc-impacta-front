@@ -3,6 +3,9 @@ import '../assets/css/login.css';
 import heroPic from '../assets/img/side-view-smiley-doctor-taking-notes.jpg';
 import { Eye, EyeOff } from "lucide-react";
 import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
+import { apiFetch } from "../services/api";
+import { authService } from "../services/authService";
+
 
 interface LogoProps {
   width?: number;
@@ -33,21 +36,23 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            senha,
-          }),
-        }
-      );
+      const response = await apiFetch(`${import.meta.env.VITE_API_URL}/login`, {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password: senha,
+        }),
+      });
+
+      if (response.status === 401) {
+        authService.logout();
+        window.location.href = `${import.meta.env.VITE_API_URL}/login`;
+        return;
+      }
 
       const data = await response.json();
+
+      authService.login(data.token);
 
       console.log("Resposta do backend:", data);
 
