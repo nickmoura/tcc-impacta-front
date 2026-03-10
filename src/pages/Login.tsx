@@ -28,7 +28,11 @@ const Logo: React.FC<LogoProps> = ({ width = 150 }) => (
   </div>
 );
 
-export default function Login() {
+interface LoginProps {
+  setLoggedIn: (value: boolean) => void;
+}
+
+export default function Login({ setLoggedIn }: LoginProps) {
   const [mostrarSenha, setMostrarSenha] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
@@ -53,6 +57,7 @@ export default function Login() {
       const data = await response.json();
 
       authService.login(data.token);
+      setLoggedIn(true);
 
       console.log("Resposta do backend:", data);
 
