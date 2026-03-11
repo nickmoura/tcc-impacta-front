@@ -3,6 +3,9 @@ import '../assets/css/login.css';
 import { Eye, EyeOff } from "lucide-react";
 import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
 import Hero from "../components/Hero";
+import { apiFetch } from "../services/api";
+import { authService } from "../services/authService";
+
 interface LogoProps {
   width?: number;
   className?: string;
@@ -25,32 +28,37 @@ const Logo: React.FC<LogoProps> = ({ width = 150 }) => (
 );
 
 interface LoginProps {
+  setLoggedIn: (value: boolean) => void;
   onRegister?: () => void;
 }
 
-export default function Login({ onRegister }: LoginProps) {
+export default function Login({ setLoggedIn, onRegister }: LoginProps) {
   const [mostrarSenha, setMostrarSenha] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password: senha,
-          }),
-        }
-      );
+      const response = await apiFetch(`${import.meta.env.VITE_API_URL}/login`, {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password: senha,
+        }),
+      });
+
+      if (response.status === 401) {
+        authService.logout();
+        window.location.href = `${import.meta.env.VITE_API_URL}/login`;
+        return;
+      }
 
       const data = await response.json();
+
+      authService.login(data.token);
+      setLoggedIn(true);
 
       console.log("Resposta do backend:", data);
 
@@ -71,16 +79,16 @@ export default function Login({ onRegister }: LoginProps) {
         <Logo width={220} />
 
         <div className="bg-white w-full max-w-md p-10 rounded-2xl shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-4">            
-          <div>
-            <input
-              type="email"
-              placeholder="seu@email.com"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <input
+                type="email"
+                placeholder="seu@email.com"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
             <div className="relative">
               <input
