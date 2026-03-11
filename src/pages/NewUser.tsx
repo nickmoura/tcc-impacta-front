@@ -19,6 +19,7 @@ export default function Registro({ onBack }: RegistroProps) {
 		setCnpj(masked);
 	}
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+		const cleanCnpj = cnpj.replace(/\D/g, ''); 
 		event.preventDefault();
 		try {
 			const response = await fetch(
@@ -30,7 +31,7 @@ export default function Registro({ onBack }: RegistroProps) {
 					},
 					body: JSON.stringify({
 						nome,
-						cnpj,
+						cnpj: cleanCnpj,
 						email,
 						password: senha,
 					}),
