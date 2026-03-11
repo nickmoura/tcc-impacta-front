@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import '../assets/css/login.css';
-import heroPic from '../assets/img/side-view-smiley-doctor-taking-notes.jpg';
 import { Eye, EyeOff } from "lucide-react";
 import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
+import Hero from "../components/Hero";
 import { apiFetch } from "../services/api";
 import { authService } from "../services/authService";
-
 
 interface LogoProps {
   width?: number;
@@ -30,12 +29,14 @@ const Logo: React.FC<LogoProps> = ({ width = 150 }) => (
 
 interface LoginProps {
   setLoggedIn: (value: boolean) => void;
+  onRegister?: () => void;
 }
 
-export default function Login({ setLoggedIn }: LoginProps) {
+export default function Login({ setLoggedIn, onRegister }: LoginProps) {
   const [mostrarSenha, setMostrarSenha] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -69,14 +70,8 @@ export default function Login({ setLoggedIn }: LoginProps) {
   return (
     <div className="flex h-screen w-full">
       {/* Lado esquerdo */}
-      <div className="hidden md:flex w-3/5 relative login-hero">
-        <img
-          src={heroPic}
-          alt="Clínica"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
-        <div className="absolute inset-0 bg-black/20" />
+      <div className="hero-container hidden md:flex w-3/5 relative">
+        <Hero />
       </div>
 
       {/* Lado direito */}
@@ -84,15 +79,16 @@ export default function Login({ setLoggedIn }: LoginProps) {
         <Logo width={220} />
 
         <div className="bg-white w-full max-w-md p-10 rounded-2xl shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-4">            <div>
-            <input
-              type="email"
-              placeholder="seu@email.com"
-              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <input
+                type="email"
+                placeholder="seu@email.com"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
             <div className="relative">
               <input
@@ -117,6 +113,18 @@ export default function Login({ setLoggedIn }: LoginProps) {
             >
               Entrar
             </button>
+            <div className="no-username-container text-center">
+              <span className="text-gray-500">
+                Não tem uma conta?{' '}
+                <button
+                  type="button"
+                  onClick={onRegister}
+                  className="text-blue-700 hover:underline"
+                >
+                  Cadastre-se aqui
+                </button>
+              </span>
+            </div>
           </form>
         </div>
       </div>
