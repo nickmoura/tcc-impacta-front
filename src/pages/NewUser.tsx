@@ -40,7 +40,12 @@ export default function Registro({ onBack }: RegistroProps) {
 
 			const data = await response.json();
 
-			console.log("Resposta do backend:", data);
+			if (response.ok) {
+				console.log("Registro realizado com sucesso:", data);
+				onBack?.();
+			} else {
+				console.error("Erro ao registrar:", data);
+			}
 
 		} catch (error) {
 			console.error("Erro ao conectar com o servidor:", error);
