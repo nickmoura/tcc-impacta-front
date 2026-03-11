@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
 import Hero from "../components/Hero";
 import mascaraCnpj from '../utils/mascaras';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface RegistroProps {
 	onBack?: () => void;
@@ -19,8 +20,31 @@ export default function Registro({ onBack }: RegistroProps) {
 		setCnpj(masked);
 	}
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-		const cleanCnpj = cnpj.replace(/\D/g, ''); 
+		const cleanCnpj = cnpj.replace(/\D/g, '');
 		event.preventDefault();
+
+		// Validação dos campos
+		if (!nome.trim()) {
+			toast.error("Por favor, preencha o nome completo.", { duration: 3000 });
+			return;
+		}
+		if (!cnpj.trim()) {
+			toast.error("Por favor, preencha o CNPJ da clínica.", { duration: 3000 });
+			return;
+		}
+		if (cleanCnpj.length < 14) {
+			toast.error("Por favor, preencha um CNPJ válido.", { duration: 3000 });
+			return;
+		}
+		if (!email.trim()) {
+			toast.error("Por favor, preencha o e-mail.", { duration: 3000 });
+			return;
+		}
+		if (!senha.trim()) {
+			toast.error("Por favor, preencha a senha.", { duration: 3000 });
+			return;
+		}
+
 		try {
 			const response = await fetch(
 				`${import.meta.env.VITE_API_URL}/registro`,
@@ -42,13 +66,22 @@ export default function Registro({ onBack }: RegistroProps) {
 
 			if (response.ok) {
 				console.log("Registro realizado com sucesso:", data);
-				onBack?.();
+				toast.success("Registro realizado com sucesso!");
+				setTimeout(() => {
+					onBack?.();
+				}, 2000);
 			} else {
 				console.error("Erro ao registrar:", data);
+				toast.error("Erro ao registrar. Por favor, tente novamente.", {
+					duration: 3000,
+				});
 			}
 
 		} catch (error) {
 			console.error("Erro ao conectar com o servidor:", error);
+			toast.error("Erro ao conectar com o servidor. Por favor, tente novamente.", {
+				duration: 3000,
+			});
 		}
 	};
 
@@ -143,6 +176,7 @@ export default function Registro({ onBack }: RegistroProps) {
 					</div>
 				</div>
 			</div>
+			<Toaster />
 		</div>
 	);
 }
