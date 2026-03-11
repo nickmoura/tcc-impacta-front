@@ -1,0 +1,182 @@
+import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
+import Hero from "../components/Hero";
+import mascaraCnpj from '../utils/mascaras';
+import toast, { Toaster } from 'react-hot-toast';
+
+interface RegistroProps {
+	onBack?: () => void;
+}
+
+export default function Registro({ onBack }: RegistroProps) {
+	const [mostrarSenha, setMostrarSenha] = useState<boolean>(false);
+	const [nome, setNome] = useState<string>("");
+	const [cnpj, setCnpj] = useState<string>("");
+	const [email, setEmail] = useState<string>("");
+	const [senha, setSenha] = useState<string>("");
+	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const masked = mascaraCnpj(e.target.value);
+		setCnpj(masked);
+	}
+	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+		const cleanCnpj = cnpj.replace(/\D/g, '');
+		event.preventDefault();
+
+		// Validação dos campos
+		if (!nome.trim()) {
+			toast.error("Por favor, preencha o nome completo.", { duration: 3000 });
+			return;
+		}
+		if (!cnpj.trim()) {
+			toast.error("Por favor, preencha o CNPJ da clínica.", { duration: 3000 });
+			return;
+		}
+		if (cleanCnpj.length < 14) {
+			toast.error("Por favor, preencha um CNPJ válido.", { duration: 3000 });
+			return;
+		}
+		if (!email.trim()) {
+			toast.error("Por favor, preencha o e-mail.", { duration: 3000 });
+			return;
+		}
+		if (!senha.trim()) {
+			toast.error("Por favor, preencha a senha.", { duration: 3000 });
+			return;
+		}
+
+		try {
+			const response = await fetch(
+				`${import.meta.env.VITE_API_URL}/registro`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						nome,
+						cnpj: cleanCnpj,
+						email,
+						password: senha,
+					}),
+				}
+			);
+
+			const data = await response.json();
+
+			if (response.ok) {
+				console.log("Registro realizado com sucesso:", data);
+				toast.success("Registro realizado com sucesso!");
+				setTimeout(() => {
+					onBack?.();
+				}, 2000);
+			} else {
+				console.error("Erro ao registrar:", data);
+				toast.error("Erro ao registrar. Por favor, tente novamente.", {
+					duration: 3000,
+				});
+			}
+
+		} catch (error) {
+			console.error("Erro ao conectar com o servidor:", error);
+			toast.error("Erro ao conectar com o servidor. Por favor, tente novamente.", {
+				duration: 3000,
+			});
+		}
+	};
+
+	return (
+		<div className="flex h-screen w-full">
+			{/* Lado esquerdo */}
+			<div className="hero-container hidden md:flex w-3/5 relative">
+				<Hero />
+			</div>
+
+			{/* Lado direito */}
+			<div className="flex flex-col w-full md:w-2/5 items-center justify-center bg-gray-50 px-6">
+				<div
+					className="mb-14 flex items-center justify-center overflow-hidden rounded-[2.5rem] shadow-md bg-[#1d4ed8]"
+					style={{
+						width: `220px`,
+						height: `220px`,
+					}}
+				>
+					<img
+						src={logoCliniflow}
+						alt="CliniFlow Logo"
+						className="w-full h-full object-cover p-2"
+					/>
+				</div>
+
+				<div className="bg-white w-full max-w-md p-10 rounded-2xl shadow-xl">
+					<form onSubmit={handleSubmit} className="space-y-4">
+						<div>
+							<input
+								type="text"
+								placeholder="Nome completo"
+								className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+								value={nome}
+								onChange={(e) => setNome(e.target.value)}
+							/>
+						</div>
+						<div>
+							<input
+								type="text"
+								placeholder="CNPJ da clínica"
+								id="cnpj"
+								maxLength={18}
+								className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+								value={cnpj}
+								onChange={handleChange}
+							/>
+						</div>
+						<div>
+							<input
+								type="email"
+								placeholder="seu@email.com"
+								className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+							/>
+						</div>
+						<div className="relative">
+							<input
+								type={mostrarSenha ? "text" : "password"}
+								placeholder="••••••••"
+								className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+								value={senha}
+								onChange={(e) => setSenha(e.target.value)}
+							/>
+							<button
+								type="button"
+								onClick={() => setMostrarSenha(!mostrarSenha)}
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+							>
+								{mostrarSenha ? <EyeOff size={20} /> : <Eye size={20} />}
+							</button>
+						</div>
+						<button
+							type="submit"
+							className="w-full bg-blue-700 text-white p-3 rounded-lg font-medium hover:bg-blue-800 transition"
+						>
+							Registrar
+						</button>
+					</form>
+					<div className="text-center mt-4">
+						<span className="text-gray-500">
+							Já tem uma conta?{' '}
+							<button
+								type="button"
+								onClick={onBack}
+								className="text-blue-700 hover:underline"
+							>
+								Entrar
+							</button>
+						</span>
+					</div>
+				</div>
+			</div>
+			<Toaster />
+		</div>
+	);
+}
