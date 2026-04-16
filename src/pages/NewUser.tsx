@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Trash2 } from "lucide-react";
 import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
 import Hero from "../components/Hero";
 import mascaraCnpj from '../utils/mascaras';
@@ -183,14 +183,28 @@ export default function Registro({ onBack }: RegistroProps) {
 							hidden={!!clinic}
 							/>
 							{clinic && (
-								<select
-									disabled
-									className="w-full border border-gray-300 rounded-lg bg-gray-100 text-gray-700 p-3 cursor-not-allowed"
-								>
-									<option value={clinic.id}>
-										{`${clinic.nome} - ${mascaraCnpj(clinic.cnpj)}`}
-									</option>
-								</select>
+								<div className="relative">
+									<select
+										disabled
+										className="w-full border border-gray-300 rounded-lg bg-gray-100 text-gray-700 p-3 pr-10 cursor-not-allowed"
+									>
+										<option value={clinic.id}>
+											{`${clinic.nome} - ${mascaraCnpj(clinic.cnpj)}`}
+										</option>
+									</select>
+									<button
+										type="button"
+										onClick={() => {
+											setClinic(null);
+											setClinicError("");
+											setCnpj("");
+										}}
+										className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-500"
+										title="Limpar clínica"
+									>
+										<Trash2 size={20} className="mr-3"/>
+									</button>
+								</div>
 							)}
 							{clinicLoading && (
 								<p className="mt-2 text-sm text-blue-600">Buscando clínica...</p>
