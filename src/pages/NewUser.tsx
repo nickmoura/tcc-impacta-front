@@ -4,6 +4,7 @@ import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
 import Hero from "../components/Hero";
 import mascaraCnpj from '../utils/mascaras';
 import toast, { Toaster } from 'react-hot-toast';
+import { authService } from '../services/authService';
 
 interface RegistroProps {
 	onBack?: () => void;
@@ -15,9 +16,68 @@ export default function Registro({ onBack }: RegistroProps) {
 	const [cnpj, setCnpj] = useState<string>("");
 	const [email, setEmail] = useState<string>("");
 	const [senha, setSenha] = useState<string>("");
+	const [clinic, setClinic] = useState<{ id: number; nome: string; cnpj: string } | null>(null);
+	const [clinicError, setClinicError] = useState<string>("");
+	const [clinicLoading, setClinicLoading] = useState<boolean>(false);
+
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const masked = mascaraCnpj(e.target.value);
 		setCnpj(masked);
+		setClinic(null);
+		setClinicError("");
+	}
+
+	async function handleCnpjBlur() {
+		const cleanCnpj = cnpj.replace(/\D/g, '');
+		if (cleanCnpj.length !== 14) {
+			return;
+		}
+
+		try {
+			setClinicLoading(true);
+			setClinicError("");
+
+			const response = await fetch(
+				`${import.meta.env.VITE_API_URL}/clinic?cnpj=${cleanCnpj}`
+			);
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				console.warn("Clinic lookup failed", response.status, data);
+				throw new Error("Clínica não encontrada");
+			}
+
+			let payload: unknown = data;
+			if (Array.isArray(data) && data.length > 0) {
+				payload = data[0];
+			}
+			if (typeof payload === 'object' && payload !== null && 'clinic' in payload) {
+				payload = (payload as { clinic: unknown }).clinic;
+			}
+
+			const payloadObj = typeof payload === 'object' && payload !== null ? payload as Record<string, unknown> : {};
+			const clinicId = payloadObj['id'] ?? payloadObj['ID'] ?? payloadObj['Id'];
+			const clinicName = payloadObj['nome'] ?? payloadObj['name'] ?? payloadObj['Nome'];
+			const clinicCnpj = payloadObj['cnpj'] ?? payloadObj['CNPJ'] ?? payloadObj['Cnpj'] ?? cleanCnpj;
+
+			if (!clinicId || !clinicName) {
+				console.warn("Clinic payload missing required fields", payload);
+				throw new Error("Dados inválidos da clínica");
+			}
+
+			setClinic({
+				id: Number(clinicId),
+				nome: String(clinicName),
+				cnpj: String(clinicCnpj),
+			});
+		} catch (error) {
+			console.warn("Clinic lookup error", error);
+			setClinic(null);
+			setClinicError("CNPJ não encontrado. Verifique e tente novamente.");
+		} finally {
+			setClinicLoading(false);
+		}
 	}
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		const cleanCnpj = cnpj.replace(/\D/g, '');
@@ -46,21 +106,12 @@ export default function Registro({ onBack }: RegistroProps) {
 		}
 
 		try {
-			const response = await fetch(
-				`${import.meta.env.VITE_API_URL}/registro`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						nome,
-						cnpj: cleanCnpj,
-						email,
-						password: senha,
-					}),
-				}
-			);
+			const response = await authService.register({
+				nome,
+				cnpj: cleanCnpj,
+				email,
+				password: senha,
+			});
 
 			const data = await response.json();
 
@@ -128,7 +179,25 @@ export default function Registro({ onBack }: RegistroProps) {
 								className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
 								value={cnpj}
 								onChange={handleChange}
+								onBlur={handleCnpjBlur}
+							hidden={!!clinic}
 							/>
+							{clinic && (
+								<select
+									disabled
+									className="w-full border border-gray-300 rounded-lg bg-gray-100 text-gray-700 p-3 cursor-not-allowed"
+								>
+									<option value={clinic.id}>
+										{`${clinic.nome} - ${mascaraCnpj(clinic.cnpj)}`}
+									</option>
+								</select>
+							)}
+							{clinicLoading && (
+								<p className="mt-2 text-sm text-blue-600">Buscando clínica...</p>
+							)}
+							{clinicError && (
+								<p className="mt-2 text-sm text-red-600">{clinicError}</p>
+							)}
 						</div>
 						<div>
 							<input
