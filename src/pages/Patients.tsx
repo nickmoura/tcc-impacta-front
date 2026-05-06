@@ -17,6 +17,7 @@ const Patients: React.FC = () => {
     nome: '',
     email: '',
     telefone: '',
+    senha: '',
   });
 
   useEffect(() => {
@@ -67,7 +68,7 @@ const Patients: React.FC = () => {
 
   const handleAdd = () => {
     setEditingPatient(null);
-    setFormData({ nome: '', email: '', telefone: '' });
+    setFormData({ nome: '', email: '', telefone: '', senha: '' }); // ← adicionar senha
     setModalOpen(true);
   };
 
@@ -76,7 +77,8 @@ const Patients: React.FC = () => {
     setFormData({
       nome: patient.nome,
       email: patient.email,
-      telefone: patient.telefone,
+      telefone: mascaraCelular(patient.telefone),
+      senha: '',
     });
     setModalOpen(true);
   };
@@ -102,7 +104,9 @@ const Patients: React.FC = () => {
       if (editingPatient) {
         await patientService.updatePatient(editingPatient.id, {
           nome: formData.nome,
-          telefone: formData.telefone,
+          email: formData.email,
+          telefone: formData.telefone.replace(/\D/g, ''),
+          password: formData.senha,
         });
         setPatients(patients.map(p => p.id === editingPatient.id ? { ...p, ...formData } : p));
         toast.success('Paciente atualizado com sucesso');
@@ -112,11 +116,17 @@ const Patients: React.FC = () => {
           toast.error('User ID não encontrado');
           return;
         }
-        const newPatient = await patientService.createPatient({
+        const response = await patientService.createPatient({
           ...formData,
+          telefone: formData.telefone.replace(/\D/g, ''),
+          password: formData.senha,
           user_id: userId,
         });
+
+        // O backend retorna { message, patient } — pegue o patient
+        const newPatient = (response as any).patient ?? response;
         setPatients([...patients, newPatient]);
+        
         toast.success('Paciente adicionado com sucesso');
       }
       setModalOpen(false);
@@ -168,7 +178,8 @@ const Patients: React.FC = () => {
             <tr key={patient.id}>
               <td className="border border-gray-300 px-4 py-2">{patient.nome}</td>
               <td className="border border-gray-300 px-4 py-2">{patient.email}</td>
-              <td className="border border-gray-300 px-4 py-2">{patient.telefone}</td>
+              <td className="border border-gray-300 px-4 py-2"> {mascaraCelular(patient.telefone)}
+              </td>
               <td className="border border-gray-300 px-4 py-2">
                 <button
                   onClick={() => handleEdit(patient)}
@@ -205,7 +216,7 @@ const Patients: React.FC = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Email</label>
+                <label className="text-sm font-medium mb-1">Email</label>
                 <input
                   type="email"
                   name="email"
@@ -213,7 +224,6 @@ const Patients: React.FC = () => {
                   onChange={handleInputChange}
                   className="w-full border px-3 py-2 rounded"
                   required
-                  disabled={!!editingPatient}
                 />
               </div>
               <div className="mb-4">
@@ -222,6 +232,18 @@ const Patients: React.FC = () => {
                   type="text"
                   name="telefone"
                   value={formData.telefone}
+                  onChange={handleInputChange}
+                  maxLength={15}
+                  className="w-full border px-3 py-2 rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Senha</label>
+                <input
+                  type="password"
+                  name="senha"
+                  value={formData.senha}
                   onChange={handleInputChange}
                   className="w-full border px-3 py-2 rounded"
                   required

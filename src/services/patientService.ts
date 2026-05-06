@@ -12,20 +12,11 @@ export interface Patient {
 
 export const patientService = {
   async getPatientsByClinic(clinic_id: number): Promise<Patient[]> {
-    if (!clinic_id || clinic_id <= 0) {
-      throw new Error('Invalid clinic_id');
-    }
-    const url = `${API_URL}/patients/clinic/${clinic_id}`;
-    console.log('Calling API:', url);
-    const response = await apiFetch(url);
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API Error Response:', errorText);
-      throw new Error(`Failed to fetch patients: ${response.status} ${response.statusText}`);
-    }
+    const response = await apiFetch(`${API_URL}/patients/clinic/${clinic_id}`);
+    if (!response.ok) throw new Error(`Erro ${response.status}`);
     const data = await response.json();
-    console.log('API returned:', data);
-    return data;
+    // se vier array direto, retorna data; se vier { patients: [] }, retorna data.patients
+    return Array.isArray(data) ? data : data.patients ?? [];
   },
 
   async getPatientsByUser(user_id: number): Promise<Patient[]> {
@@ -45,18 +36,19 @@ export const patientService = {
     return data;
   },
 
-  async createPatient(data: { nome: string; email: string; telefone: string; user_id: number }): Promise<Patient> {
+  async createPatient(data: { nome: string; email: string; telefone: string; password: string; user_id: number }): Promise<Patient> {
     const response = await apiFetch(`${API_URL}/patients`, {
       method: "POST",
       body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error("Failed to create patient");
-    return response.json();
+    const data2 = await response.json();
+    return data2.patient ?? data2;
   },
 
-  async updatePatient(id: number, data: { nome: string; telefone: string }): Promise<any> {
+  async updatePatient(id: number, data: { nome: string; email?: string; telefone: string; password?: string }): Promise<any> {
     const response = await apiFetch(`${API_URL}/patients/${id}`, {
-      method: "PUT",
+      method: "PATCH", // usar PATCH em vez de PUT para atualização parcial
       body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error("Failed to update patient");

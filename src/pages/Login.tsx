@@ -57,34 +57,34 @@ export default function Login({ setLoggedIn, onRegister }: LoginProps) {
       }
 
       const data = await response.json();
-
       console.log('Login response:', data);
-      
-      const token = data?.token ?? data?.accessToken ?? data?.access_token ?? data?.payload?.token ?? data?.payload?.accessToken ?? data?.payload?.access_token;
+
+      const token = data?.token;
       if (!token || typeof token !== 'string') {
-        console.error('No auth token found in login response', data);
         toast.error('Não foi possível autenticar. Verifique o backend.');
         return;
       }
 
+
       authService.login(token);
 
       // Armazenar clinic_id e user_id como números
-      const clinicId = data.clinic_id ?? data.clinicId ?? data?.user?.clinic_id ?? data?.user?.clinicId;
-      const userId = data.id ?? data.userId ?? data?.user?.id ?? data?.user?.ID;
+      const clinicId = data?.user?.clinic_id;
+      const userId = data?.user?.id;
 
-      if (clinicId) {
+      console.log('clinicId from response:', clinicId);  // ← adicione isso
+      console.log('userId from response:', userId);        // ← e isso
+
+      if (clinicId != null) {
         localStorage.setItem('clinic_id', String(Number(clinicId)));
-        console.log('Stored clinic_id:', Number(clinicId));
       } else {
-        console.warn('No clinic_id in login response');
+        console.warn('clinic_id ausente na resposta:', data);
       }
 
-      if (userId) {
+      if (userId != null) {
         localStorage.setItem('user_id', String(Number(userId)));
-        console.log('Stored user_id:', Number(userId));
       } else {
-        console.warn('No user_id in login response');
+        console.warn('user_id ausente na resposta:', data);
       }
 
       setLoggedIn(true);
