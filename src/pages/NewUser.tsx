@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Trash2 } from "lucide-react";
 import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
 import Hero from "../components/Hero";
-import mascaraCnpj from '../utils/mascaras';
+import { mascaraCnpj } from '../utils/mascaras';
 import toast, { Toaster } from 'react-hot-toast';
 import { authService } from '../services/authService';
 
