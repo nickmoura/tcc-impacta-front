@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Trash2, Plus, Edit, ArrowLeft, Users, CheckCircle, Activity } from "lucide-react";
+import { Trash2, Plus, Edit, ArrowLeft, Users, Activity } from "lucide-react";
 import { mascaraCelular } from '../utils/mascaras';
 import toast, { Toaster } from 'react-hot-toast';
 import { authService } from '../services/authService';
