@@ -19,10 +19,26 @@ export const authService = {
 
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('clinic_id');
+    localStorage.removeItem('user_id');
   },
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem(TOKEN_KEY);
+  },
+
+  getClinicId(): number | null {
+    const clinicId = localStorage.getItem('clinic_id');
+    if (!clinicId) return null;
+    const parsed = parseInt(clinicId, 10);
+    return isNaN(parsed) ? null : parsed;
+  },
+
+  getUserId(): number | null {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) return null;
+    const parsed = parseInt(userId, 10);
+    return isNaN(parsed) ? null : parsed;
   },
 
   async register(data: RegisterData): Promise<Response> {

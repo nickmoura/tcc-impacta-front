@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Registro from "./pages/NewUser";
 import Dashboard from "./pages/Dashboard";
+import Patients from "./pages/Patients";
 import { authService } from "./services/authService";
 
 function App() {
@@ -9,7 +11,14 @@ function App() {
   const [page, setPage] = useState<'login' | 'register'>('login');
 
   if (loggedIn) {
-    return <Dashboard setLoggedIn={setLoggedIn} />;
+    return (
+      <Router>
+        <Routes>
+          <Route path="/" element={<Dashboard setLoggedIn={setLoggedIn} />} />
+          <Route path="/patients" element={<Patients />} />
+        </Routes>
+      </Router>
+    );
   }
 
   return (

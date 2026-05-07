@@ -16,8 +16,17 @@ export async function apiFetch(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  return fetch(url, {
-    ...options,
-    headers
-  });
+  console.log('API Request:', { url, method: options.method || 'GET', hasToken: !!token });
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers
+    });
+    console.log('API Response:', { url, status: response.status, statusText: response.statusText });
+    return response;
+  } catch (error) {
+    console.error('API Error:', { url, error });
+    throw error;
+  }
 }
