@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { authService } from "../services/authService";
 
 interface DashboardProps {
@@ -20,7 +21,13 @@ export default function Dashboard({ setLoggedIn }: DashboardProps) {
 				</button>
 			</header>
 			<main className="flex-1 p-6">
-				<p className="text-gray-600">Ainda em desenvolvimento.</p>
+				<p className="text-gray-600 mb-4">Ainda em desenvolvimento.</p>
+				<Link
+					to="/patients"
+					className="bg-green-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-600 transition"
+				>
+					Gerenciar Pacientes
+				</Link>
 			</main>
 		</div>
 	)

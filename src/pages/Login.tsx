@@ -3,6 +3,7 @@ import '../assets/css/login.css';
 import { Eye, EyeOff } from "lucide-react";
 import logoCliniflow from '../assets/img/cliniflow-high-resolution-logo.png';
 import Hero from "../components/Hero";
+import toast from 'react-hot-toast';
 import { apiFetch } from "../services/api";
 import { authService } from "../services/authService";
 
@@ -51,13 +52,41 @@ export default function Login({ setLoggedIn, onRegister }: LoginProps) {
 
       if (response.status === 401) {
         authService.logout();
-        window.location.href = `${import.meta.env.VITE_API_URL}/login`;
+        toast.error('Credenciais inválidas.');
         return;
       }
 
       const data = await response.json();
+      console.log('Login response:', data);
 
-      authService.login(data.token);
+      const token = data?.token;
+      if (!token || typeof token !== 'string') {
+        toast.error('Não foi possível autenticar. Verifique o backend.');
+        return;
+      }
+
+
+      authService.login(token);
+
+      // Armazenar clinic_id e user_id como números
+      const clinicId = data?.user?.clinic_id;
+      const userId = data?.user?.id;
+
+      console.log('clinicId from response:', clinicId);  // ← adicione isso
+      console.log('userId from response:', userId);        // ← e isso
+
+      if (clinicId != null) {
+        localStorage.setItem('clinic_id', String(Number(clinicId)));
+      } else {
+        console.warn('clinic_id ausente na resposta:', data);
+      }
+
+      if (userId != null) {
+        localStorage.setItem('user_id', String(Number(userId)));
+      } else {
+        console.warn('user_id ausente na resposta:', data);
+      }
+
       setLoggedIn(true);
 
       console.log("Resposta do backend:", data);
