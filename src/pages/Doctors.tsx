@@ -317,39 +317,41 @@ const Doctors: React.FC = () => {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            {[
-                                { label: 'Nome Completo', name: 'nome', type: 'text', placeholder: 'Dr. João Silva' },
-                                { label: 'Email', name: 'email', type: 'email', placeholder: 'medico@clinica.com' },
-                                { label: 'CRM', name: 'crm', type: 'text', placeholder: 'CRM/SP 123456' },
-                                { label: 'Especialidade', name: 'specialty', type: 'text', placeholder: 'Ex: Cardiologia' },
-                                { label: 'Telefone', name: 'telefone', type: 'text', placeholder: '(11) 99999-9999', maxLength: 15 },
-                                { label: 'Senha', name: 'senha', type: 'password', placeholder: '••••••••' },
-                                // CNPJ só aparece no formulário de criação — na edição não é necessário
-                                ...(!editingDoctor ? [{
-                                    label: 'CNPJ da Clínica',
-                                    name: 'clinic_cnpj',
-                                    type: 'text',
-                                    placeholder: '00.000.000/0001-00',
-                                    maxLength: 18,
-                                }] : []),
-                            ].map((field) => (
-                                <div key={field.name}>
-                                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5">
-                                        {field.label}
-                                    </label>
-                                    <input
-                                        type={field.type}
-                                        name={field.name}
-                                        value={formData[field.name as keyof typeof formData]}
-                                        onChange={handleInputChange}
-                                        placeholder={field.placeholder}
-                                        maxLength={field.maxLength}
-                                        required
-                                        className="w-full border-[1.5px] border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-800 bg-[#fafafa] placeholder-gray-300 outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/10 focus:bg-white transition-all"
-                                    />
-                                </div>
-                            ))}
+                        <form onSubmit={handleSubmit} className="">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                {[
+                                    { label: 'Nome Completo', name: 'nome', type: 'text', placeholder: 'Dr. João Silva' },
+                                    { label: 'Email', name: 'email', type: 'email', placeholder: 'medico@clinica.com' },
+                                    { label: 'CRM', name: 'crm', type: 'text', placeholder: 'CRM/SP 123456' },
+                                    { label: 'Especialidade', name: 'specialty', type: 'text', placeholder: 'Ex: Cardiologia' },
+                                    { label: 'Telefone', name: 'telefone', type: 'text', placeholder: '(11) 99999-9999', maxLength: 15 },
+                                    { label: 'Senha', name: 'senha', type: 'password', placeholder: '••••••••' },
+                                    // CNPJ só aparece no formulário de criação — na edição não é necessário
+                                    ...(!editingDoctor ? [{
+                                        label: 'CNPJ da Clínica',
+                                        name: 'clinic_cnpj',
+                                        type: 'text',
+                                        placeholder: '00.000.000/0001-00',
+                                        maxLength: 18,
+                                    }] : []),
+                                ].map((field) => (
+                                    <div key={field.name}>
+                                        <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5">
+                                            {field.label}
+                                        </label>
+                                        <input
+                                            type={field.type}
+                                            name={field.name}
+                                            value={formData[field.name as keyof typeof formData]}
+                                            onChange={handleInputChange}
+                                            placeholder={field.placeholder}
+                                            maxLength={field.maxLength}
+                                            required
+                                            className="w-full border-[1.5px] border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-800 bg-[#fafafa] placeholder-gray-300 outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/10 focus:bg-white transition-all"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
 
                             <div className="flex justify-end gap-2.5 pt-5 mt-5 border-t border-gray-100">
                                 <button
