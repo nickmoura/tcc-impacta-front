@@ -28,6 +28,12 @@ export default function Dashboard({ setLoggedIn }: DashboardProps) {
 				>
 					Gerenciar Pacientes
 				</Link>
+								<Link
+					to="/doctors"
+					className="bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition"
+				>
+					Gerenciar Médicos
+				</Link>
 			</main>
 		</div>
 	)
