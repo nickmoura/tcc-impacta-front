@@ -6,9 +6,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { authService } from '../services/authService';
 import { patientService, type Patient } from '../services/patientService';
 
-function getInitials(name: string) {
-  return name
+function getInitials(name?: string) {
+  return (name || '?')
     .split(' ')
+    .filter(Boolean)
     .slice(0, 2)
     .map((w) => w[0])
     .join('')
@@ -85,9 +86,9 @@ const Patients: React.FC = () => {
   const handleEdit = (patient: Patient) => {
     setEditingPatient(patient);
     setFormData({
-      nome: patient.nome,
-      email: patient.email,
-      telefone: mascaraCelular(patient.telefone),
+      nome: patient.nome || '',
+      email: patient.email || '',
+      telefone: mascaraCelular(patient.telefone || ''),
       senha: '',
     });
     setModalOpen(true);
@@ -112,12 +113,13 @@ const Patients: React.FC = () => {
 
     try {
       if (editingPatient) {
-        await patientService.updatePatient(editingPatient.id, {
+        const updateData = {
           nome: formData.nome,
           email: formData.email,
           telefone: formData.telefone.replace(/\D/g, ''),
-          password: formData.senha,
-        });
+        };
+
+        await patientService.updatePatient(editingPatient.id, updateData);
         setPatients(patients.map(p => p.id === editingPatient.id ? { ...p, ...formData } : p));
         toast.success('Paciente atualizado com sucesso');
       } else {
@@ -126,15 +128,15 @@ const Patients: React.FC = () => {
           toast.error('User ID não encontrado');
           return;
         }
-        const response = await patientService.createPatient({
+        await patientService.createPatient({
           ...formData,
           telefone: formData.telefone.replace(/\D/g, ''),
           password: formData.senha,
           user_id: userId,
         });
 
-        const newPatient = (response as any).patient ?? response;
-        setPatients([...patients, newPatient]);
+        const patientsData = await patientService.getPatientsByClinic(clinicId);
+        setPatients(patientsData || []);
         toast.success('Paciente adicionado com sucesso');
       }
       setModalOpen(false);
@@ -242,13 +244,13 @@ const Patients: React.FC = () => {
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#1D4ED8] to-[#3b82f6] flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm">
                           {getInitials(patient.nome)}
                         </div>
-                        <span className="font-semibold text-sm text-gray-800">{patient.nome}</span>
+                        <span className="font-semibold text-sm text-gray-800">{patient.nome || 'Sem nome'}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-400">{patient.email}</td>
+                    <td className="px-6 py-4 text-sm text-gray-400">{patient.email || '-'}</td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center bg-gray-50 border border-gray-100 text-gray-500 text-xs font-mono font-medium px-3 py-1.5 rounded-full">
-                        {mascaraCelular(patient.telefone)}
+                        {patient.telefone ? mascaraCelular(patient.telefone) : '-'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -306,7 +308,9 @@ const Patients: React.FC = () => {
                 { label: 'Nome Completo', name: 'nome', type: 'text', placeholder: 'Ex: Maria Silva' },
                 { label: 'Email', name: 'email', type: 'email', placeholder: 'email@exemplo.com' },
                 { label: 'Telefone', name: 'telefone', type: 'text', placeholder: '(00) 00000-0000', maxLength: 15 },
-                { label: 'Senha', name: 'senha', type: 'password', placeholder: '••••••••' },
+                ...(!editingPatient
+                  ? [{ label: 'Senha', name: 'senha', type: 'password', placeholder: '••••••••' }]
+                  : []),
               ].map((field) => (
                 <div key={field.name}>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5">

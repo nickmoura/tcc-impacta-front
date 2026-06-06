@@ -4,10 +4,26 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export interface Patient {
   id: number;
+  patient_id?: number;
+  paciente_id?: number;
+  id_paciente?: number;
+  patientId?: number;
   nome: string;
   email: string;
   telefone: string;
   user_id: number;
+}
+
+function normalizePatient(patient: any): Patient {
+  return {
+    ...patient,
+    id: patient.patient_id ?? patient.paciente_id ?? patient.id_paciente ?? patient.patientId ?? patient.id,
+  };
+}
+
+function normalizePatients(data: any): Patient[] {
+  const patients = Array.isArray(data) ? data : data.patients ?? [];
+  return patients.map(normalizePatient);
 }
 
 export const patientService = {
@@ -16,7 +32,7 @@ export const patientService = {
     if (!response.ok) throw new Error(`Erro ${response.status}`);
     const data = await response.json();
     // se vier array direto, retorna data; se vier { patients: [] }, retorna data.patients
-    return Array.isArray(data) ? data : data.patients ?? [];
+    return normalizePatients(data);
   },
 
   async getPatientsByUser(user_id: number): Promise<Patient[]> {
@@ -33,7 +49,7 @@ export const patientService = {
     }
     const data = await response.json();
     console.log('API returned:', data);
-    return data;
+    return normalizePatients(data);
   },
 
   async createPatient(data: { nome: string; email: string; telefone: string; password: string; user_id: number }): Promise<Patient> {
@@ -43,7 +59,7 @@ export const patientService = {
     });
     if (!response.ok) throw new Error("Failed to create patient");
     const data2 = await response.json();
-    return data2.patient ?? data2;
+    return normalizePatient(data2.patient ?? data2);
   },
 
   async updatePatient(id: number, data: { nome: string; email?: string; telefone: string; password?: string }): Promise<any> {
@@ -51,7 +67,10 @@ export const patientService = {
       method: "PATCH", // usar PATCH em vez de PUT para atualização parcial
       body: JSON.stringify(data),
     });
-    if (!response.ok) throw new Error("Failed to update patient");
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || "Failed to update patient");
+    }
     return response.json();
   },
 
